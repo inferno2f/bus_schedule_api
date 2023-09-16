@@ -5,6 +5,9 @@ class Route(models.Model):
     route_id = models.IntegerField(primary_key=True)
     route_short_name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return f"Route #: {self.route_short_name}"
+
 
 class Stop(models.Model):
     stop_id = models.IntegerField(primary_key=True)
@@ -20,6 +23,10 @@ class CalendarDates(models.Model):
     date = models.IntegerField()
     exception_type = models.IntegerField()
 
+    class Meta:
+        verbose_name = "Calendar dates"
+        verbose_name_plural = "Calendar dates"
+
 
 class Trip(models.Model):
     trip_id = models.IntegerField()
@@ -34,3 +41,7 @@ class StopTimes(models.Model):
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     arrival_time = models.DateTimeField()
     departure_time = models.DateTimeField()
+
+    class Meta:
+        verbose_name = "Stop times"
+        verbose_name_plural = "Stop times"
