@@ -11,11 +11,14 @@ class Route(models.Model):
 
 class Stop(models.Model):
     stop_id = models.IntegerField(primary_key=True)
-    stop_code = models.IntegerField()
+    stop_code = models.IntegerField(null=True)
     stop_name = models.CharField(max_length=255)
-    stop_latitude = models.FloatField()
-    stop_longitude = models.FloatField()
-    zone_id = models.IntegerField()
+    stop_latitude = models.CharField(max_length=36)
+    stop_longitude = models.CharField(max_length=36)
+    zone_id = models.IntegerField(null=True)
+
+    def __str__(self):
+        return f"{self.stop_code}: {self.stop_name}" 
 
 
 class CalendarDates(models.Model):
