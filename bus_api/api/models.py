@@ -18,7 +18,7 @@ class Stop(models.Model):
     zone_id = models.IntegerField(null=True)
 
     def __str__(self):
-        return f"{self.stop_code}: {self.stop_name}" 
+        return f"{self.stop_code}: {self.stop_name}"
 
 
 class CalendarDates(models.Model):
