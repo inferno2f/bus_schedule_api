@@ -23,7 +23,7 @@ class Stop(models.Model):
 
 class CalendarDates(models.Model):
     service_id = models.IntegerField(primary_key=True)
-    date = models.IntegerField()
+    date = models.CharField(max_length=50)
     exception_type = models.IntegerField()
 
     class Meta:
