@@ -12,7 +12,7 @@ class CharToIntegerField(serializers.Field):
 
 class RouteSerializer(serializers.Serializer):
     route_id = serializers.IntegerField()
-    bus_number = CharToIntegerField(source="route_short_name")
+    bus_number = serializers.CharField(source="route_short_name")
 
     class Meta:
         model = Route
