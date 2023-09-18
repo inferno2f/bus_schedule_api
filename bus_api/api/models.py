@@ -38,12 +38,15 @@ class Trip(models.Model):
     trip_headsign = models.CharField(max_length=255)
     direction_id = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.trip_headsign}"
+
 
 class StopTimes(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
-    arrival_time = models.DateTimeField()
-    departure_time = models.DateTimeField()
+    arrival_time = models.CharField(max_length=255)
+    departure_time = models.CharField(max_length=255)
 
     class Meta:
         verbose_name = "Stop times"
