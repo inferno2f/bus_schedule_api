@@ -2,14 +2,6 @@ from rest_framework import serializers
 from api.models import Route, Trip, CalendarDates
 
 
-class CharToIntegerField(serializers.Field):
-    def to_representation(self, obj):
-        try:
-            return int(obj)
-        except (TypeError, ValueError):
-            return obj
-
-
 class RouteSerializer(serializers.Serializer):
     route_id = serializers.IntegerField()
     bus_number = serializers.CharField(source="route_short_name")
@@ -21,9 +13,9 @@ class RouteSerializer(serializers.Serializer):
 
 
 class DirectionSerializer(serializers.Serializer):
-    # route = serializers.StringRelatedField(many=True)
+    route = serializers.StringRelatedField(source='route.route_short_name')
     trip_headsign = serializers.CharField()
-    # direction_id = serializers.IntegerField()
+    direction_id = serializers.IntegerField()
 
     class Meta:
         model = Trip
