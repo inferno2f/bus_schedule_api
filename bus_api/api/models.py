@@ -22,7 +22,7 @@ class Stop(models.Model):
 
 
 class CalendarDates(models.Model):
-    service_id = models.IntegerField(primary_key=True)
+    service_id = models.IntegerField()
     date = models.CharField(max_length=50)
     exception_type = models.IntegerField()
 
@@ -30,11 +30,17 @@ class CalendarDates(models.Model):
         verbose_name = "Calendar dates"
         verbose_name_plural = "Calendar dates"
 
+    def __str__(self):
+        year = self.date[0:4]
+        month = self.date[4:6]
+        day = self.date[6:]
+        return f"{year}/{month}/{day}"
+
 
 class Trip(models.Model):
     trip_id = models.IntegerField()
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
-    service = models.ForeignKey(CalendarDates, on_delete=models.CASCADE)
+    service_id = models.IntegerField()
     trip_headsign = models.CharField(max_length=255)
     direction_id = models.IntegerField()
 
