@@ -1,7 +1,7 @@
 import datetime
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, response
+from rest_framework import viewsets, response, mixins
 from api.serializers import RouteSerializer, DirectionSerializer, CalendarSerializer
 from api.models import Route, Trip, CalendarDates
 
@@ -22,11 +22,11 @@ class RouteViewSet(viewsets.ReadOnlyModelViewSet):
         return response.Response(serializer.data)
 
 
-class TripViewSet(viewsets.ReadOnlyModelViewSet):
+class TripViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Returns trips for any given day
 
     Query parameters:
-        search_id (int)
+        search_id: {int}
     """
     queryset = Trip.objects.all()
     serializer_class = DirectionSerializer
@@ -42,13 +42,13 @@ class TripViewSet(viewsets.ReadOnlyModelViewSet):
         return response.Response(serializer.data)
 
 
-class CalendarViewSet(viewsets.ReadOnlyModelViewSet):
+class CalendarViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     Returns a list of services active on a specified date.
     If no query parameters are passed returns today's services.
 
     Query parameters:
-        date (int): YYYYMMDD
+        date (YYYYMMDD): {str}
     """
     queryset = CalendarDates.objects.all()
     serializer_class = CalendarSerializer
