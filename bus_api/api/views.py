@@ -2,7 +2,7 @@ import datetime
 
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, response, mixins
-from api.serializers import RouteSerializer, DirectionSerializer, CalendarSerializer
+from api.serializers import RouteSerializer, TripSerializer, CalendarSerializer
 from api.models import Route, Trip, CalendarDates
 
 
@@ -26,19 +26,19 @@ class TripViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Returns trips for any given day
 
     Query parameters:
-        search_id: {int}
+        service_id: {int}
     """
     queryset = Trip.objects.all()
-    serializer_class = DirectionSerializer
+    serializer_class = TripSerializer
     filterset_fields = ["service_id"]
 
     def list(self, request):
         service_ids = request.query_params.getlist("service_id")
-        queryset = Trip.objects.distinct("trip_headsign")
+        queryset = Trip.objects.distinct("route", "direction_id")
         if service_ids:
             queryset = queryset.filter(service_id__in=service_ids)
 
-        serializer = DirectionSerializer(queryset, many=True)
+        serializer = TripSerializer(queryset, many=True)
         return response.Response(serializer.data)
 
 
@@ -55,7 +55,6 @@ class CalendarViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     filterset_fields = ["date"]
 
     def get_queryset(self):
-        # queryset = CalendarDates.objects.all()
         date = self.request.query_params.get('date')
         if date:
             return CalendarDates.objects.filter(date=date)
