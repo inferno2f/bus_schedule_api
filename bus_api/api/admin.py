@@ -11,8 +11,12 @@ class StopTimesAdmin(admin.ModelAdmin):
     raw_id_fields = ("trip", "stop",)
 
 
+class StopAdmin(admin.ModelAdmin):
+    search_fields = ("stop_name",)
+
+
 admin.site.register(Route, RouteAdmin)
-admin.site.register(Stop)
+admin.site.register(Stop, StopAdmin)
 admin.site.register(CalendarDates)
 admin.site.register(Trip)
 admin.site.register(StopTimes, StopTimesAdmin)
