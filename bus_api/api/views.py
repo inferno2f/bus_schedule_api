@@ -2,8 +2,13 @@ import datetime
 
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, response, mixins
-from api.serializers import RouteSerializer, TripSerializer, CalendarSerializer
-from api.models import Route, Trip, CalendarDates
+from api.serializers import (
+    RouteSerializer,
+    TripSerializer,
+    CalendarSerializer,
+    StopTimesSerializer,
+)
+from api.models import Route, Trip, CalendarDates, StopTimes
 
 
 class RouteViewSet(viewsets.ReadOnlyModelViewSet):
@@ -28,6 +33,7 @@ class TripViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     Query parameters:
         service_id: {int}
     """
+
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
     filterset_fields = ["service_id"]
@@ -50,15 +56,45 @@ class CalendarViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     Query parameters:
         date (YYYYMMDD): {str}
     """
+
     queryset = CalendarDates.objects.all()
     serializer_class = CalendarSerializer
     filterset_fields = ["date"]
 
     def get_queryset(self):
-        date = self.request.query_params.get('date')
+        date = self.request.query_params.get("date")
         if date:
             return CalendarDates.objects.filter(date=date)
         else:
             current_date = datetime.date.today()
             formatted_date = current_date.strftime("%Y%m%d")
             return CalendarDates.objects.filter(date=formatted_date)
+
+
+class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Returns a list of all arrival times of a route at a specified stop.
+
+    Query parameters:
+        stop_id: {int}
+        service_id: {int} (can be multiple)
+        route: {int}
+    """
+    serializer_class = StopTimesSerializer
+    queryset = StopTimes.objects.none()
+
+    def list(self, *args, **kwargs):
+        stop_id = self.request.GET.get("stop_id")
+        service_ids = self.request.GET.get("service_id")
+        route = self.request.GET.get("route")
+
+        if stop_id is not None and route is not None and service_ids:
+            print(stop_id, service_ids, route)
+            queryset = StopTimes.objects.filter(
+                stop_id=stop_id,
+                trip__service_id__in=service_ids,
+                trip__route__route_short_name=route,
+            ).order_by("arrival_time")
+        else:
+            queryset = StopTimes.objects.none()
+        serializer = self.get_serializer(queryset, many=True)
+        return response.Response(serializer.data)

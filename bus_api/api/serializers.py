@@ -1,19 +1,22 @@
 from rest_framework import serializers
-from api.models import Route, Trip, CalendarDates
+from api.models import Route, Trip, CalendarDates, StopTimes
 
 
-class RouteSerializer(serializers.Serializer):
+class RouteSerializer(serializers.ModelSerializer):
     route_id = serializers.IntegerField()
     bus_number = serializers.CharField(source="route_short_name")
 
     class Meta:
         model = Route
-        fields = ("route_id", "route_short_name",)
+        fields = (
+            "route_id",
+            "route_short_name",
+        )
         read_only_fields = "__all__"
 
 
-class TripSerializer(serializers.Serializer):
-    route = serializers.StringRelatedField(source='route.route_short_name')
+class TripSerializer(serializers.ModelSerializer):
+    route = serializers.StringRelatedField(source="route")
     trip_headsign = serializers.SerializerMethodField()
     direction_id = serializers.IntegerField()
 
@@ -28,7 +31,7 @@ class TripSerializer(serializers.Serializer):
         fields = ("route", "trip_headsign", "direction_id")
 
 
-class CalendarSerializer(serializers.Serializer):
+class CalendarSerializer(serializers.ModelSerializer):
     service_id = serializers.IntegerField()
     date = serializers.CharField()
     exception_type = serializers.IntegerField()
@@ -36,3 +39,18 @@ class CalendarSerializer(serializers.Serializer):
     class Meta:
         model = CalendarDates
         fields = ("date", "service_id", "exception_type")
+
+
+class StopTimesSerializer(serializers.ModelSerializer):
+    trip = serializers.CharField(source="trip.trip_headsign")
+    stop_name = serializers.CharField(source="stop.stop_name")
+    stop_id = serializers.CharField(source="stop.stop_id")
+
+    class Meta:
+        model = StopTimes
+        fields = (
+            "trip",
+            "stop_name",
+            "stop_id",
+            "arrival_time",
+        )
