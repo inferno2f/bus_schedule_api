@@ -14,10 +14,10 @@ class RouteSerializer(serializers.Serializer):
 
 class TripSerializer(serializers.Serializer):
     route = serializers.StringRelatedField(source='route.route_short_name')
-    truncated_trip_headsign = serializers.SerializerMethodField()
+    trip_headsign = serializers.SerializerMethodField()
     direction_id = serializers.IntegerField()
 
-    def get_truncated_trip_headsign(self, instance):
+    def get_trip_headsign(self, instance):
         parts = instance.trip_headsign.split(" ")
         if len(parts) >= 2:
             return " ".join(parts[1:])
@@ -25,7 +25,7 @@ class TripSerializer(serializers.Serializer):
 
     class Meta:
         model = Trip
-        fields = ("route", "truncated_trip_headsign", "direction_id")
+        fields = ("route", "trip_headsign", "direction_id")
 
 
 class CalendarSerializer(serializers.Serializer):
