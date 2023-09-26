@@ -84,15 +84,16 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, *args, **kwargs):
         stop_id = self.request.GET.get("stop_id")
-        service_ids = self.request.GET.get("service_id")
+        service_ids = self.request.GET.getlist("service_id")
         route = self.request.GET.get("route")
+        direction_id = self.request.GET.get("direction_id")
 
         if stop_id is not None and route is not None and service_ids:
-            print(stop_id, service_ids, route)
             queryset = StopTimes.objects.filter(
                 stop_id=stop_id,
                 trip__service_id__in=service_ids,
                 trip__route__route_short_name=route,
+                trip__direction_id=direction_id,
             ).order_by("arrival_time")
         else:
             queryset = StopTimes.objects.none()
