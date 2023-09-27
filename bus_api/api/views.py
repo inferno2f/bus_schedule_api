@@ -1,7 +1,11 @@
 import datetime
 
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework import viewsets, response, mixins
+
+from api.models import Route, Trip, CalendarDates, StopTimes
 from api.serializers import (
     RouteSerializer,
     RouteStopsSerializer,
@@ -9,8 +13,6 @@ from api.serializers import (
     CalendarSerializer,
     StopTimesSerializer,
 )
-
-from api.models import Route, Trip, CalendarDates, StopTimes
 
 
 class RouteViewSet(viewsets.ReadOnlyModelViewSet):
@@ -77,15 +79,19 @@ class RouteStopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = RouteStopsSerializer
     queryset = StopTimes.objects.none()
 
-    def list(self, *args, **kwargs):        # service_ids = self.request.GET.getlist("service_id")
+    def list(self, *args, **kwargs):
         route = self.request.GET.get("route")
         direction_id = self.request.GET.get("direction_id")
 
         if (route and direction_id) is not None:
-            queryset = StopTimes.objects.filter(
-                trip__route__route_short_name=route,
-                trip__direction_id=direction_id,
-            ).order_by("stop__stop_name").distinct("stop__stop_name")
+            queryset = (
+                StopTimes.objects.filter(
+                    trip__route__route_short_name=route,
+                    trip__direction_id=direction_id,
+                )
+                .order_by("stop__stop_name")
+                .distinct("stop__stop_name")
+            )
         else:
             queryset = StopTimes.objects.none()
         serializer = self.get_serializer(queryset, many=True)
@@ -100,9 +106,25 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         service_id: {int} (can be multiple)
         route: {int}
     """
+
     serializer_class = StopTimesSerializer
     queryset = StopTimes.objects.none()
 
+    # Custom parameter fields for Swagger
+    stop = openapi.Parameter(
+        "stop_id", openapi.IN_QUERY, description="Stop ID", type=openapi.TYPE_NUMBER
+    )
+    service = openapi.Parameter(
+        "service_id", openapi.IN_QUERY, description="Service ID(s)", type=openapi.TYPE_NUMBER
+    )
+    route = openapi.Parameter(
+        "route", openapi.IN_QUERY, description="Route #", type=openapi.TYPE_NUMBER
+    )
+    direction = openapi.Parameter(
+        "direction_id", openapi.IN_QUERY, description="Direction ID", type=openapi.FORMAT_BINARY
+    )
+
+    @swagger_auto_schema(manual_parameters=[stop, service, route, direction])
     def list(self, *args, **kwargs):
         stop_id = self.request.GET.get("stop_id")
         service_ids = self.request.GET.getlist("service_id")
