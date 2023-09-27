@@ -43,15 +43,27 @@ class CalendarSerializer(serializers.ModelSerializer):
 
 
 class StopTimesSerializer(serializers.ModelSerializer):
-    trip = serializers.CharField(source="trip.trip_headsign")
+    trip_id = serializers.CharField(source="trip.trip_id")
     stop_name = serializers.CharField(source="stop.stop_name")
     stop_id = serializers.CharField(source="stop.stop_id")
 
     class Meta:
         model = StopTimes
         fields = (
-            "trip",
+            "trip_id",
             "stop_name",
             "stop_id",
             "arrival_time",
+        )
+
+
+class RouteStopsSerializer(serializers.ModelSerializer):
+    stop_id = serializers.CharField(source="stop.stop_id")
+    stop_name = serializers.CharField(source="stop.stop_name")
+
+    class Meta:
+        model = StopTimes
+        fields = (
+            "stop_id",
+            "stop_name",
         )

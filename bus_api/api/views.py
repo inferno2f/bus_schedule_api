@@ -4,10 +4,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, response, mixins
 from api.serializers import (
     RouteSerializer,
+    RouteStopsSerializer,
     TripSerializer,
     CalendarSerializer,
     StopTimesSerializer,
 )
+
 from api.models import Route, Trip, CalendarDates, StopTimes
 
 
@@ -15,12 +17,12 @@ class RouteViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         queryset = Route.objects.all()
         serializer = RouteSerializer(queryset, many=True)
         return response.Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, pk=None, **kwargs):
         queryset = Route.objects.all()
         route = get_object_or_404(queryset, pk=pk)
         serializer = RouteSerializer(route)
@@ -38,7 +40,7 @@ class TripViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = TripSerializer
     filterset_fields = ["service_id"]
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         service_ids = request.query_params.getlist("service_id")
         queryset = Trip.objects.distinct("route", "direction_id")
         if service_ids:
@@ -69,6 +71,25 @@ class CalendarViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             current_date = datetime.date.today()
             formatted_date = current_date.strftime("%Y%m%d")
             return CalendarDates.objects.filter(date=formatted_date)
+
+
+class RouteStopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = RouteStopsSerializer
+    queryset = StopTimes.objects.none()
+
+    def list(self, *args, **kwargs):        # service_ids = self.request.GET.getlist("service_id")
+        route = self.request.GET.get("route")
+        direction_id = self.request.GET.get("direction_id")
+
+        if (route and direction_id) is not None:
+            queryset = StopTimes.objects.filter(
+                trip__route__route_short_name=route,
+                trip__direction_id=direction_id,
+            ).order_by("stop__stop_name").distinct("stop__stop_name")
+        else:
+            queryset = StopTimes.objects.none()
+        serializer = self.get_serializer(queryset, many=True)
+        return response.Response(serializer.data)
 
 
 class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
