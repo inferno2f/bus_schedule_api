@@ -20,16 +20,16 @@ class TripSerializer(serializers.ModelSerializer):
     trip_headsign = serializers.SerializerMethodField()
     direction_id = serializers.IntegerField()
 
+    class Meta:
+        model = Trip
+        fields = ("trip_id", "route", "trip_headsign", "direction_id", "service_id")
+
     def get_trip_headsign(self, instance):
         fare = "-Exact Fare"
         parts = instance.trip_headsign.split(" ")
         if len(parts) >= 2:
             return " ".join(parts[1:]).replace(fare, "")
         return instance.trip_headsign
-
-    class Meta:
-        model = Trip
-        fields = ("trip_id", "route", "trip_headsign", "direction_id", "service_id")
 
 
 class CalendarSerializer(serializers.ModelSerializer):
