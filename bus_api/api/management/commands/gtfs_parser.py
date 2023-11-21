@@ -1,12 +1,12 @@
 import csv
+import os
 from itertools import islice
 
 from api.models import Route, Stop, CalendarDates, Trip, StopTimes
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-STATIC_FOLDER = settings.STATICFILES_DIRS[0]
+DATA_FOLDER = os.path.join(BASE_DIR, "data")
 
 
 def batch_iterator(iterable, batch_size):
@@ -19,7 +19,7 @@ def batch_iterator(iterable, batch_size):
 
 
 def route_parser():
-    with open(f"{STATIC_FOLDER}/routes.txt", "r") as f:
+    with open(f"{DATA_FOLDER}/routes.txt", "r") as f:
         Route.objects.all().delete()
         csv_reader = csv.reader(f)
         next(csv_reader)
@@ -40,7 +40,7 @@ def route_parser():
 
 @transaction.atomic
 def stop_parser():
-    with open(f"{STATIC_FOLDER}/stops.txt", "r") as f:
+    with open(f"{DATA_FOLDER}/stops.txt", "r") as f:
         Stop.objects.all().delete()
         csv_reader = csv.reader(f)
         next(csv_reader)
@@ -69,7 +69,7 @@ def stop_parser():
 
 @transaction.atomic
 def calendar_dates_parser():
-    with open(f"{STATIC_FOLDER}/calendar_dates.txt", "r") as f:
+    with open(f"{DATA_FOLDER}/calendar_dates.txt", "r") as f:
         CalendarDates.objects.all().delete()
         csv_reader = csv.reader(f)
         next(csv_reader)
@@ -92,7 +92,7 @@ def calendar_dates_parser():
 
 @transaction.atomic
 def trip_parser():
-    with open(f"{STATIC_FOLDER}/trips.txt", "r") as f:
+    with open(f"{DATA_FOLDER}/trips.txt", "r") as f:
         Trip.objects.all().delete()
         csv_reader = csv.reader(f)
         next(csv_reader)
@@ -120,7 +120,7 @@ def trip_parser():
 
 @transaction.atomic
 def stop_times_parser():
-    with open(f"{STATIC_FOLDER}/stop_times.txt", "r") as f:
+    with open(f"{DATA_FOLDER}/stop_times.txt", "r") as f:
         StopTimes.objects.all().delete()
         csv_reader = csv.reader(f)
         next(csv_reader)
