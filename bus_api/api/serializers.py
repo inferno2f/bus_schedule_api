@@ -15,23 +15,6 @@ class RouteSerializer(serializers.ModelSerializer):
         read_only_fields = ["route_id", "bus_number"]
 
 
-class TripSerializer(serializers.ModelSerializer):
-    route = serializers.StringRelatedField(source="route.route_short_name")
-    trip_headsign = serializers.SerializerMethodField()
-    direction_id = serializers.IntegerField()
-
-    class Meta:
-        model = Trip
-        fields = ("trip_id", "route", "trip_headsign", "direction_id", "service_id")
-
-    def get_trip_headsign(self, instance):
-        fare = "-Exact Fare"
-        parts = instance.trip_headsign.split(" ")
-        if len(parts) >= 2:
-            return " ".join(parts[1:]).replace(fare, "")
-        return instance.trip_headsign
-
-
 class CalendarSerializer(serializers.ModelSerializer):
     service_id = serializers.IntegerField()
     date = serializers.CharField()
@@ -67,3 +50,26 @@ class RouteStopsSerializer(serializers.ModelSerializer):
             "stop_id",
             "stop_name",
         )
+
+
+class TripSerializer(serializers.ModelSerializer):
+    route = serializers.StringRelatedField(source="route.route_short_name")
+    trip_headsign = serializers.SerializerMethodField()
+    direction_id = serializers.IntegerField()
+    # stops = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Trip
+        fields = ("trip_id", "route", "trip_headsign", "direction_id", "service_id",)
+
+    def get_trip_headsign(self, instance):
+        fare = "-Exact Fare"
+        parts = instance.trip_headsign.split(" ")
+        if len(parts) >= 2:
+            return " ".join(parts[1:]).replace(fare, "")
+        return instance.trip_headsign
+
+    def get_stops(self, instance):
+        stops_queryset = StopTimes.objects.filter(trip=instance)
+        stop_serializer = RouteStopsSerializer(stops_queryset, many=True)
+        return stop_serializer.data
