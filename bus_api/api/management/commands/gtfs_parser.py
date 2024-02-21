@@ -4,9 +4,10 @@ from itertools import islice
 
 from api.models import Route, Stop, CalendarDates, Trip, StopTimes
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from django.db import transaction
 
-DATA_FOLDER = os.path.join(BASE_DIR, "data")
+DATA_FOLDER = os.path.join(settings.BASE_DIR, "static")
 
 
 def batch_iterator(iterable, batch_size):
