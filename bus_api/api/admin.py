@@ -9,10 +9,11 @@ class RouteAdmin(admin.ModelAdmin):
 class StopTimesAdmin(admin.ModelAdmin):
     """Significantly improves performance of the admin panel"""
     raw_id_fields = ("trip", "stop",)
+    search_fields = ("trip__trip_id", "stop__stop_id")
 
 
 class StopAdmin(admin.ModelAdmin):
-    search_fields = ("stop_name",)
+    search_fields = ("stop_name", "stop_id")
 
 
 admin.site.register(Route, RouteAdmin)
