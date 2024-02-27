@@ -32,10 +32,12 @@ class RouteViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class TripViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Returns trips for any given day
+    """
+    Returns a list of unique trips (inbound and outbound).
+    Can be filtered bu query parameter `service_id`
 
     Query parameters:
-        service_id: {int}
+        service_id: {int} (can be multiple)
     """
 
     queryset = Trip.objects.all()
@@ -76,9 +78,25 @@ class CalendarViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class RouteStopsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Returns a list of stops with names and ids for a specified route.
+
+    Query params:
+        route: {int}
+        direction_id: {int} (binary)
+    """
     serializer_class = RouteStopsSerializer
     queryset = StopTimes.objects.none()
 
+    # Custom parameter fields for Swagger
+    route = openapi.Parameter(
+        "route", openapi.IN_QUERY, description="Route #", type=openapi.TYPE_NUMBER,
+    )
+    direction = openapi.Parameter(
+        "direction_id", openapi.IN_QUERY, description="Direction ID", type=openapi.FORMAT_BINARY,
+    )
+
+    @swagger_auto_schema(manual_parameters=[route, direction])
     def list(self, *args, **kwargs):
         route = self.request.GET.get("route")
         direction_id = self.request.GET.get("direction_id")
@@ -132,12 +150,13 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         direction_id = self.request.GET.get("direction_id")
 
         if stop_id is not None and route is not None and service_ids:
+            print(service_ids)
             queryset = StopTimes.objects.filter(
                 stop_id=stop_id,
                 trip__service_id__in=service_ids,
                 trip__route__route_short_name=route,
                 trip__direction_id=direction_id,
-            ).order_by("arrival_time")
+            ).order_by("arrival_time").distinct("arrival_time")
         else:
             queryset = StopTimes.objects.none()
         serializer = self.get_serializer(queryset, many=True)
