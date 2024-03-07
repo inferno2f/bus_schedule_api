@@ -155,6 +155,11 @@ cython_debug/
 # Visual Studio Code
 .vscode/
 
+# Jetbrains
+.idea/
+
 # static
 static/
 .DS_Store
+
+bus_api/*.json
