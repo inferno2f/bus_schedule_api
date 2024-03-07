@@ -57,3 +57,6 @@ class StopTimes(models.Model):
     class Meta:
         verbose_name = "Stop times"
         verbose_name_plural = "Stop times"
+
+    def __str__(self) -> str:
+        return f"{self.stop.stop_name}: {self.arrival_time}"
