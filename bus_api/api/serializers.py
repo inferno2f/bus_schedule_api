@@ -56,7 +56,6 @@ class TripSerializer(serializers.ModelSerializer):
     route = serializers.StringRelatedField(source="route.route_short_name")
     trip_headsign = serializers.SerializerMethodField()
     direction_id = serializers.IntegerField()
-    # stops = serializers.SerializerMethodField()
 
     class Meta:
         model = Trip
