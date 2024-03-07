@@ -121,8 +121,9 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     Query parameters:
         stop_id: {int}
-        service_id: {int} (can be multiple)
         route: {int}
+        direction_id: {int}
+        service_id: {int} (can be multiple)
     """
 
     serializer_class = StopTimesSerializer
