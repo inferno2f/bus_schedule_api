@@ -112,10 +112,6 @@ LOGGING = {
         },
     },
     "formatters": {
-        # "verbose": {
-        #     "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
-        #     "style": "{",
-        # },
         "standard": {
             "format": "%(asctime)s %(levelname)s %(name)s %(message)s"
         },
@@ -128,7 +124,7 @@ LOGGING = {
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "EST"
+TIME_ZONE = "America/New_York"
 
 USE_I18N = True
 
