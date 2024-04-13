@@ -1,3 +1,4 @@
+import logging
 import csv
 import os
 from itertools import islice
@@ -8,6 +9,7 @@ from django.conf import settings
 from django.db import transaction
 
 DATA_FOLDER = os.path.join(settings.BASE_DIR, "static")
+logger = logging.getLogger(__name__)
 
 
 def batch_iterator(iterable, batch_size):
@@ -20,6 +22,7 @@ def batch_iterator(iterable, batch_size):
 
 
 def route_parser():
+    logger.info("Adding routes...")
     with open(f"{DATA_FOLDER}/routes.txt", "r") as f:
         Route.objects.all().delete()
         csv_reader = csv.reader(f)
@@ -41,6 +44,7 @@ def route_parser():
 
 @transaction.atomic
 def stop_parser():
+    logger.info("Adding stops...")
     with open(f"{DATA_FOLDER}/stops.txt", "r") as f:
         Stop.objects.all().delete()
         csv_reader = csv.reader(f)
@@ -70,6 +74,7 @@ def stop_parser():
 
 @transaction.atomic
 def calendar_dates_parser():
+    logger.info("Adding calendar dates...")
     with open(f"{DATA_FOLDER}/calendar_dates.txt", "r") as f:
         CalendarDates.objects.all().delete()
         csv_reader = csv.reader(f)
@@ -93,6 +98,7 @@ def calendar_dates_parser():
 
 @transaction.atomic
 def trip_parser():
+    logger.info("Adding trips...")
     with open(f"{DATA_FOLDER}/trips.txt", "r") as f:
         Trip.objects.all().delete()
         csv_reader = csv.reader(f)
@@ -121,6 +127,7 @@ def trip_parser():
 
 @transaction.atomic
 def stop_times_parser():
+    logger.info("Adding stop times...")
     with open(f"{DATA_FOLDER}/stop_times.txt", "r") as f:
         StopTimes.objects.all().delete()
         csv_reader = csv.reader(f)
@@ -148,6 +155,7 @@ def stop_times_parser():
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
+        logger.info("Overwriting DB")
         route_parser()
         stop_parser()
         calendar_dates_parser()

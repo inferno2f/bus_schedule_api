@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0", "localhost", "127.0.0.1", "host.docker.internal",]
+ALLOWED_HOSTS = ["hopstopapi.site", "0.0.0.0", "localhost", "127.0.0.1", "host.docker.internal",]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -94,6 +94,34 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    "version": 1,  # the dictConfig format version
+    "disable_existing_loggers": True,  # retain the default loggers
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+            "level": "INFO",
+            "formatter": "standard",
+        },
+    },
+    "loggers": {
+        "": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+        },
+    },
+    "formatters": {
+        # "verbose": {
+        #     "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+        #     "style": "{",
+        # },
+        "standard": {
+            "format": "%(asctime)s %(levelname)s %(name)s %(message)s"
+        },
+
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
