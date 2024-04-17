@@ -3,6 +3,7 @@ import os
 import urllib.request
 import zipfile
 from datetime import datetime as dt
+from datetime import timedelta
 
 from django.conf import settings
 from django.core.management import call_command
@@ -12,7 +13,9 @@ from imap_tools import MailBox
 PASSWORD = os.getenv("EMAIL_PASSWORD")
 LOGIN = os.getenv("EMAIL_ADDRESS")
 SUBJECT = "New NJ TRANSIT GTFS Data Available"
+SENDER = "no-reply@mytransit.njtransit.com"
 NJ_TRANSIT_URL = "https://www.njtransit.com/bus_data.zip"
+DATE = dt.today() - timedelta(days=1)
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +26,11 @@ def check_new_data():
     """
     with MailBox("imap.gmail.com").login(LOGIN, PASSWORD) as mailbox:
         for msg in mailbox.fetch():
-            if msg.subject.lower() == SUBJECT.lower() and dt.today().date() == msg.date.date():
+            if (
+                msg.subject.lower() == SUBJECT.lower()
+                and msg.date.date() == DATE.date()
+                and msg.from_ == SENDER
+            ):
                 logger.info(f"New data notification: {dt.today()}")
                 fetch_new_data()
                 return
