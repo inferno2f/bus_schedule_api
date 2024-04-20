@@ -43,11 +43,13 @@ class StopTimesSerializer(serializers.ModelSerializer):
 class RouteStopsSerializer(serializers.ModelSerializer):
     stop_id = serializers.IntegerField(source="stop.stop_id")
     stop_name = serializers.CharField(source="stop.stop_name")
+    stop_code = serializers.CharField(source="stop.stop_code")
 
     class Meta:
         model = StopTimes
         fields = (
             "stop_id",
+            "stop_code",
             "stop_name",
         )
 
