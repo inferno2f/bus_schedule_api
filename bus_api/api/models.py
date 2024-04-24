@@ -53,6 +53,7 @@ class StopTimes(models.Model):
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     arrival_time = models.CharField(max_length=255)
     departure_time = models.CharField(max_length=255)
+    stop_sequence = models.IntegerField(null=True, blank=False)
 
     class Meta:
         verbose_name = "Stop times"

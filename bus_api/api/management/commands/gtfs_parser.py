@@ -140,6 +140,7 @@ def stop_times_parser():
                 arrival_time = columns[1].strip('"')
                 departure_time = columns[2].strip('"')
                 stop_id = int(columns[3])
+                stop_sequence = int(columns[4])
                 trip = Trip.objects.get(trip_id=trip_id)
                 stop = Stop.objects.get(stop_id=stop_id)
                 bulk_insert_list.append(
@@ -148,6 +149,7 @@ def stop_times_parser():
                         stop=stop,
                         arrival_time=arrival_time,
                         departure_time=departure_time,
+                        stop_sequence=stop_sequence,
                     )
                 )
             StopTimes.objects.bulk_create(bulk_insert_list)
@@ -161,3 +163,4 @@ class Command(BaseCommand):
         calendar_dates_parser()
         trip_parser()
         stop_times_parser()
+        logger.info("DB update completed")

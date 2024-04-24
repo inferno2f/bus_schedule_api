@@ -151,7 +151,6 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         direction_id = self.request.GET.get("direction_id")
 
         if stop_id is not None and route is not None and service_ids:
-            print(service_ids)
             queryset = StopTimes.objects.filter(
                 stop_id=stop_id,
                 trip__service_id__in=service_ids,

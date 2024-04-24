@@ -51,6 +51,7 @@ class RouteStopsSerializer(serializers.ModelSerializer):
             "stop_id",
             "stop_code",
             "stop_name",
+            "stop_sequence",
         )
 
 
