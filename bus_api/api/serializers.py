@@ -1,18 +1,25 @@
 from rest_framework import serializers
 from api.models import Route, Trip, CalendarDates, StopTimes
+from api.fixtures.routes import route_headsigns
 
 
 class RouteSerializer(serializers.ModelSerializer):
     route_id = serializers.IntegerField()
     bus_number = serializers.StringRelatedField(source="route_short_name")
+    readable_headsign = serializers.SerializerMethodField()
 
     class Meta:
         model = Route
         fields = (
             "route_id",
             "bus_number",
+            "readable_headsign",
         )
         read_only_fields = ["route_id", "bus_number"]
+
+    def get_readable_headsign(self, instance):
+        if instance.route_short_name.lower() in route_headsigns:
+            return route_headsigns[instance.route_short_name.lower()]
 
 
 class CalendarSerializer(serializers.ModelSerializer):
@@ -59,10 +66,11 @@ class TripSerializer(serializers.ModelSerializer):
     route = serializers.StringRelatedField(source="route.route_short_name")
     trip_headsign = serializers.SerializerMethodField()
     direction_id = serializers.IntegerField()
+    readable_headsign = serializers.SerializerMethodField()
 
     class Meta:
         model = Trip
-        fields = ("route", "trip_headsign", "direction_id", "service_id",)
+        fields = ("route", "trip_headsign", "direction_id", "service_id", "readable_headsign")
 
     def get_trip_headsign(self, instance):
         fare = "-Exact Fare"
@@ -75,3 +83,7 @@ class TripSerializer(serializers.ModelSerializer):
         stops_queryset = StopTimes.objects.filter(trip=instance)
         stop_serializer = RouteStopsSerializer(stops_queryset, many=True)
         return stop_serializer.data
+
+    def get_readable_headsign(self, instance):
+        if instance.route.route_short_name.lower() in route_headsigns:
+            return route_headsigns[instance.route.route_short_name.lower()]
