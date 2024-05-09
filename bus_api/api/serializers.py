@@ -34,6 +34,7 @@ class CalendarSerializer(serializers.ModelSerializer):
 
 class StopTimesSerializer(serializers.ModelSerializer):
     trip_id = serializers.IntegerField(source="trip.trip_id")
+    trip_headsign = serializers.SerializerMethodField()
     stop_name = serializers.CharField(source="stop.stop_name")
     stop_id = serializers.IntegerField(source="stop.stop_id")
 
@@ -41,10 +42,18 @@ class StopTimesSerializer(serializers.ModelSerializer):
         model = StopTimes
         fields = (
             "trip_id",
+            "trip_headsign",
             "stop_name",
             "stop_id",
             "arrival_time",
         )
+
+    def get_trip_headsign(self, instance):
+        fare = "-Exact Fare"
+        parts = instance.trip.trip_headsign.split(" ")
+        if len(parts) >= 2:
+            return " ".join(parts[1:]).replace(fare, "")
+        return instance.trip_headsign
 
 
 class RouteStopsSerializer(serializers.ModelSerializer):
