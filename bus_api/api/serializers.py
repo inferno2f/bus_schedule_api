@@ -37,6 +37,7 @@ class StopTimesSerializer(serializers.ModelSerializer):
     trip_headsign = serializers.SerializerMethodField()
     stop_name = serializers.CharField(source="stop.stop_name")
     stop_id = serializers.IntegerField(source="stop.stop_id")
+    stop_code = serializers.IntegerField(source="stop.stop_code")
 
     class Meta:
         model = StopTimes
@@ -45,6 +46,7 @@ class StopTimesSerializer(serializers.ModelSerializer):
             "trip_headsign",
             "stop_name",
             "stop_id",
+            "stop_code",
             "arrival_time",
         )
 
