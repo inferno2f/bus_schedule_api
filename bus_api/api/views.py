@@ -149,6 +149,7 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         service_ids = self.request.GET.getlist("service_id")
         route = self.request.GET.get("route")
         direction_id = self.request.GET.get("direction_id")
+        trip_id = self.request.GET.get("trip_id", None)
 
         if stop_id is not None and route is not None and service_ids:
             queryset = StopTimes.objects.filter(
@@ -157,6 +158,10 @@ class RouteStopTimesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 trip__route__route_short_name=route,
                 trip__direction_id=direction_id,
             ).order_by("arrival_time").distinct("arrival_time")
+        elif trip_id:
+            queryset = StopTimes.objects.filter(trip__trip_id=trip_id).order_by(
+                "arrival_time"
+            )
         else:
             queryset = StopTimes.objects.none()
         serializer = self.get_serializer(queryset, many=True)
